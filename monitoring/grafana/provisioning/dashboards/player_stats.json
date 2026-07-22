@@ -1,0 +1,689 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.8 },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(CAST(kills AS FLOAT) / NULLIF(CAST(deaths AS FLOAT), 0.0)), 2) as value FROM player_stats WHERE player_name = '$player_name'",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg K/D Ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 40 },
+              { "color": "green", "value": 50 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 3, "y": 0 },
+      "id": 2,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(CAST(headshot_kills AS FLOAT) / NULLIF(CAST(kills AS FLOAT), 0.0) * 100), 1) as value FROM player_stats WHERE player_name = '$player_name' AND kills > 0",
+          "refId": "A"
+        }
+      ],
+      "title": "Headshot %",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 40 },
+              { "color": "green", "value": 50 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 6, "y": 0 },
+      "id": 3,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(CAST(first_kill_rounds AS FLOAT) / NULLIF(CAST(first_kill_rounds + first_death_rounds AS FLOAT), 0.0) * 100), 1) as value FROM player_combat_stats WHERE player_name = '$player_name'",
+          "refId": "A"
+        }
+      ],
+      "title": "Opening Duel Win %",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 30 },
+              { "color": "green", "value": 40 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 9, "y": 0 },
+      "id": 4,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(clutch_win_rate), 1) as value FROM player_combat_stats WHERE player_name = '$player_name' AND clutch_attempts > 0",
+          "refId": "A"
+        }
+      ],
+      "title": "Clutch Win Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "green", "value": 75 }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 12, "y": 0 },
+      "id": 5,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(trade_success_rate), 1) as value FROM player_combat_stats WHERE player_name = '$player_name'",
+          "refId": "A"
+        }
+      ],
+      "title": "Trade Success %",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 15, "y": 0 },
+      "id": 6,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(adr), 1) as value FROM player_stats WHERE player_name = '$player_name'",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg Damage/Round",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [ { "color": "green", "value": null } ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 18, "y": 0 },
+      "id": 7,
+      "options": {
+        "colorMode": "thresholds",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT COUNT(DISTINCT match_id) as value FROM player_stats WHERE player_name = '$player_name'",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Matches",
+      "type": "stat"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 8,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, ROUND(CAST(ps.kills AS FLOAT) / NULLIF(CAST(ps.deaths AS FLOAT), 0.0), 2) as \"K/D Ratio\" FROM matches m JOIN player_stats ps ON m.match_id = ps.match_id WHERE ps.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "K/D Ratio Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 9,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, ROUND(CAST(ps.headshot_kills AS FLOAT) / NULLIF(CAST(ps.kills AS FLOAT), 0.0) * 100, 1) as \"Headshot %\" FROM matches m JOIN player_stats ps ON m.match_id = ps.match_id WHERE ps.player_name = '$player_name' AND ps.kills > 0 ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Headshot % Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "id": 10,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pcs.first_kill_rounds as \"Opening Kills\", pcs.first_death_rounds as \"Opening Deaths\", ROUND(CAST(pcs.first_kill_rounds AS FLOAT) / NULLIF(CAST(pcs.first_kill_rounds + pcs.first_death_rounds AS FLOAT), 0.0) * 100, 1) as \"Opening Win %\" FROM matches m JOIN player_combat_stats pcs ON m.match_id = pcs.match_id WHERE pcs.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Opening Duels Performance",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 11,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pas.first_bullet_accuracy as \"First Bullet Acc\", pas.spray_control_accuracy as \"Spray Control\" FROM matches m JOIN player_aim_stats pas ON m.match_id = pas.match_id WHERE pas.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Aim Accuracy Trends",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "displayMode": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 20 },
+      "id": 14,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT pas.one_tap_kills as \"One-Taps\", pas.spray_kills as \"Sprays\", ROUND(CAST(pas.one_tap_kills AS FLOAT) / NULLIF(CAST(pas.one_tap_kills + pas.spray_kills AS FLOAT), 0.0) * 100, 1) as \"One-Tap %\", pas.avg_bullets_to_kill as \"Avg Bullets/Kill\", pas.flick_accuracy as \"Flick Acc %\" FROM player_aim_stats pas WHERE pas.player_name = '$player_name' ORDER BY pas.match_id DESC LIMIT 10",
+          "refId": "A"
+        }
+      ],
+      "title": "Kill Type Breakdown (Recent)",
+      "type": "table"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "never"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 15,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pcs.clutch_attempts as \"Clutch Attempts\", pcs.clutch_wins as \"Clutch Wins\" FROM matches m JOIN player_combat_stats pcs ON m.match_id = pcs.match_id WHERE pcs.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Clutch Performance Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 16,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pcs.traded_teammate_deaths as \"Traded Deaths\", pcs.got_traded_after_kill as \"Got Traded\" FROM matches m JOIN player_combat_stats pcs ON m.match_id = pcs.match_id WHERE pcs.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Trading Performance",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "displayMode": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "id": 17,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT pps.deaths_to_peekers as \"Deaths to Peekers\", pps.deaths_while_moving as \"Deaths While Moving\", pps.deaths_from_behind as \"Deaths From Behind\", pps.deaths_in_open as \"Deaths In Open\", pps.early_deaths_pct as \"Early Death %\", pps.entry_frag_success_pct as \"Entry Frag %\" FROM player_positioning_stats pps WHERE pps.player_name = '$player_name' ORDER BY pps.match_id DESC LIMIT 10",
+          "refId": "A"
+        }
+      ],
+      "title": "Death Analysis (Recent Matches)",
+      "type": "table"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "displayMode": "auto"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "id": 18,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT pus.enemies_flashed as \"Enemies Flashed\", pus.teammates_flashed as \"Team Flashed\", pus.utility_damage_dealt as \"Utility Damage\", pus.flashbangs_thrown as \"Flashes\", pus.smokes_thrown as \"Smokes\", pus.molotovs_thrown as \"Molotovs\", pus.utility_wasted as \"Wasted\" FROM player_utility_stats pus WHERE pus.player_name = '$player_name' ORDER BY pus.match_id DESC LIMIT 10",
+          "refId": "A"
+        }
+      ],
+      "title": "Utility Usage (Recent Matches)",
+      "type": "table"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+      "id": 19,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pms.total_distance_traveled as \"Distance (m)\", pms.avg_velocity as \"Avg Velocity\", pms.successful_bhops as \"Bhops\" FROM matches m JOIN player_movement_stats pms ON m.match_id = pms.match_id WHERE pms.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Movement Stats Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto"
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+      "id": 20,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "time_series",
+          "rawSql": "SELECT m.created_at as time, pes.kills_on_eco_rounds as \"Eco Kills\", pes.kills_on_full_buy as \"Full Buy Kills\", pes.deaths_on_eco_rounds as \"Eco Deaths\", pes.deaths_on_full_buy as \"Full Buy Deaths\" FROM matches m JOIN player_economy_stats pes ON m.match_id = pes.match_id WHERE pes.player_name = '$player_name' ORDER BY m.created_at",
+          "refId": "A"
+        }
+      ],
+      "title": "Performance by Economy Type",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "CockroachDB",
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" } }
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 52 },
+      "id": 21,
+      "options": {
+        "showHeader": true,
+        "footer": { "show": false }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT m.map_name as \"Map\", m.created_at as \"Date\", ps.team as \"Side\", ps.kills as \"K\", ps.deaths as \"D\", ps.assists as \"A\", ROUND(CAST(ps.kills AS FLOAT) / NULLIF(CAST(ps.deaths AS FLOAT), 0.0), 2) as \"K/D\", ROUND(CAST(ps.headshot_kills AS FLOAT) / NULLIF(CAST(ps.kills AS FLOAT), 0.0) * 100, 1) as \"HS%\", ROUND(ps.adr, 1) as \"ADR\", pcs.first_kill_rounds as \"Opening Kills\", pcs.clutch_wins as \"Clutches\", CASE WHEN ps.team = m.winner_team THEN 'W' ELSE 'L' END as \"Result\" FROM matches m JOIN player_stats ps ON m.match_id = ps.match_id JOIN player_combat_stats pcs ON m.match_id = pcs.match_id AND ps.player_id = pcs.player_id WHERE ps.player_name = '$player_name' ORDER BY m.created_at DESC LIMIT 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent Match Performance (Detailed)",
+      "type": "table"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["cs2", "player", "improvement"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": "CockroachDB",
+        "definition": "SELECT DISTINCT player_name FROM player_stats ORDER BY player_name",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Player",
+        "multi": false,
+        "name": "player_name",
+        "options": [],
+        "query": "SELECT DISTINCT player_name FROM player_stats ORDER BY player_name",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-30d", "to": "now" },
+  "timezone": "browser",
+  "title": "CS2 Player Stats",
+  "uid": "cs2-player-stats",
+  "version": 1
+}

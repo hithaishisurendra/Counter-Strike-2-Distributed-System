@@ -1,0 +1,20 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: false
+    editable: true
+    
+  - name: CockroachDB
+    type: postgres
+    access: proxy
+    url: crdb1:26257
+    database: cs2analytics
+    user: root
+    isDefault: true
+    editable: true
+    jsonData:
+      sslmode: 'disable'
+      postgresVersion: 1300

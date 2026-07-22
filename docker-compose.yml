@@ -1,0 +1,195 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - cs2-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - cs2-network
+
+  crdb1:
+    image: cockroachdb/cockroach:v23.1.11
+    hostname: crdb1
+    container_name: crdb1
+    command: start --insecure --join=crdb1,crdb2,crdb3
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - cs2-network
+
+  crdb2:
+    image: cockroachdb/cockroach:v23.1.11
+    hostname: crdb2
+    container_name: crdb2
+    command: start --insecure --join=crdb1,crdb2,crdb3
+    networks:
+      - cs2-network
+
+  crdb3:
+    image: cockroachdb/cockroach:v23.1.11
+    hostname: crdb3
+    container_name: crdb3
+    command: start --insecure --join=crdb1,crdb2,crdb3
+    networks:
+      - cs2-network
+
+  crdb-init:
+    image: cockroachdb/cockroach:v23.1.11
+    container_name: crdb-init
+    depends_on:
+      - crdb1
+      - crdb2
+      - crdb3
+    command: >
+      bash -c "
+      sleep 10 &&
+      /cockroach/cockroach init --insecure --host=crdb1 &&
+      sleep 5 &&
+      /cockroach/cockroach sql --insecure --host=crdb1 -f /docker-entrypoint-initdb.d/init.sql
+      "
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - cs2-network
+
+  upload-api:
+    build: ./upload-api
+    container_name: upload-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./shared:/shared
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SHARED_VOLUME_PATH=/shared/uploads
+    depends_on:
+      - kafka
+    networks:
+      - cs2-network
+
+  parser-service:
+    build: ./parser
+    #container_name: parser-service
+    volumes:
+      - ./shared:/shared
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SHARED_VOLUME_PATH=/shared/uploads
+      - CRDB_HOST=crdb1
+      - CRDB_PORT=26257
+      - CRDB_DATABASE=cs2analytics
+      - CRDB_USER=root
+    depends_on:
+      - kafka
+      - crdb-init
+    networks:
+      - cs2-network
+
+  read-api:
+    build: ./read-api
+    container_name: read-api
+    ports:
+      - "5001:5001"
+    environment:
+      - CRDB_HOST=crdb1
+      - CRDB_PORT=26257
+      - CRDB_DATABASE=cs2analytics
+      - CRDB_USER=root
+    depends_on:
+      - crdb1
+    networks:
+      - cs2-network
+
+  ml-service:
+    build: ./ml-service
+    container_name: ml-service
+    ports:
+      - "5002:5002"
+    environment:
+      - CRDB_HOST=crdb1
+      - CRDB_PORT=26257
+      - CRDB_DATABASE=cs2analytics
+      - CRDB_USER=root
+    depends_on:
+      - crdb1
+      - crdb2
+      - crdb3
+    volumes:
+      - ./ml-service/trained_models:/app/trained_models
+    networks:
+      - cs2-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - cs2-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    depends_on:
+      - crdb1
+      - prometheus
+    networks:
+      - cs2-network
+
+networks:
+  cs2-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

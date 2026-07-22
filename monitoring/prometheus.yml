@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Upload API metrics
+  - job_name: 'upload-api'
+    static_configs:
+      - targets: ['upload-api:5000']
+    metrics_path: '/metrics'
+
+  # CockroachDB metrics
+  - job_name: 'cockroachdb'
+    static_configs:
+      - targets: ['crdb1:8080']
+    metrics_path: '/_status/vars'
+
+  # Parser service metrics (we'll add this endpoint)
+  - job_name: 'parser-service'
+    static_configs:
+      - targets: ['parser-service:8000']
+    metrics_path: '/metrics'
+
